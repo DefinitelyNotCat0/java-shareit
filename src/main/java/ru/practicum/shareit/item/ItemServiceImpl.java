@@ -48,9 +48,10 @@ public class ItemServiceImpl implements ItemService {
         return itemRepository.findAll()
                 .stream()
                 .filter(item ->
-                        item.getAvailable() &&
-                                (item.getName().equalsIgnoreCase(text)
-                                        || item.getDescription().equalsIgnoreCase(text)))
+                        Boolean.TRUE.equals(item.getAvailable()) &&
+                                ((item.getName() != null && item.getName().equalsIgnoreCase(text)) ||
+                                        (item.getDescription() != null &&
+                                                item.getDescription().equalsIgnoreCase(text))))
                 .map(itemMapper::toItemDto)
                 .toList();
     }

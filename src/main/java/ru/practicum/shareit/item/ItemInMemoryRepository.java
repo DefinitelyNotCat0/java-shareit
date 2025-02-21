@@ -1,5 +1,6 @@
 package ru.practicum.shareit.item;
 
+import ch.qos.logback.core.util.StringUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 import ru.practicum.shareit.exception.ForbiddenException;
@@ -19,8 +20,10 @@ public class ItemInMemoryRepository implements ItemRepository {
     @Override
     public Optional<Item> findById(Long id) {
         if (!items.containsKey(id)) {
+            log.debug("Item was not found for id = {}", id);
             return Optional.empty();
         }
+        log.debug("Item was found for id = {}", id);
         return Optional.of(items.get(id));
     }
 
@@ -44,8 +47,10 @@ public class ItemInMemoryRepository implements ItemRepository {
             throw new ForbiddenException("You can only edit your items");
         }
 
-        item.setName(newItem.getName() != null ? newItem.getName() : item.getName());
-        item.setDescription(newItem.getDescription() != null ? newItem.getDescription() : item.getDescription());
+        item.setName(!StringUtil.isNullOrEmpty(newItem.getName()) ?
+                newItem.getName() : item.getName());
+        item.setDescription(!StringUtil.isNullOrEmpty(newItem.getDescription()) ?
+                newItem.getDescription() : item.getDescription());
         item.setAvailable(newItem.getAvailable() != null ? newItem.getAvailable() : item.getAvailable());
 
         log.debug("Item with id {} was updated", newItem.getId());

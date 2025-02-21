@@ -15,26 +15,19 @@ public class ErrorHandler {
         return new ErrorResponse("Not found", e.getMessage());
     }
 
-    @ExceptionHandler({
-            ValidationException.class,
-            MethodArgumentNotValidException.class
-    })
+    @ExceptionHandler({ValidationException.class, MethodArgumentNotValidException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleValidationException(final Exception e) {
         return new ErrorResponse("Validation error", e.getMessage());
     }
 
-    @ExceptionHandler({
-            ConflictException.class
-    })
+    @ExceptionHandler({ConflictException.class})
     @ResponseStatus(HttpStatus.CONFLICT)
     public ErrorResponse handleConflictException(final Exception e) {
         return new ErrorResponse("Conflict", e.getMessage());
     }
 
-    @ExceptionHandler({
-            ForbiddenException.class
-    })
+    @ExceptionHandler({ForbiddenException.class})
     @ResponseStatus(HttpStatus.FORBIDDEN)
     public ErrorResponse handleForbiddenException(final Exception e) {
         return new ErrorResponse("Forbidden", e.getMessage());

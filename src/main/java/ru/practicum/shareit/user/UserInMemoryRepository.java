@@ -1,5 +1,6 @@
 package ru.practicum.shareit.user;
 
+import ch.qos.logback.core.util.StringUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 
@@ -17,8 +18,10 @@ public class UserInMemoryRepository implements UserRepository {
     @Override
     public Optional<User> findById(Long id) {
         if (!users.containsKey(id)) {
+            log.debug("User was not found for id = {}", id);
             return Optional.empty();
         }
+        log.debug("User was found for id = {}", id);
         return Optional.of(users.get(id));
     }
 
@@ -38,8 +41,8 @@ public class UserInMemoryRepository implements UserRepository {
     @Override
     public User update(User newUser) {
         User user = users.get(newUser.getId());
-        user.setName(newUser.getName() != null ? newUser.getName() : user.getName());
-        user.setEmail(newUser.getEmail() != null ? newUser.getEmail() : user.getEmail());
+        user.setName(!StringUtil.isNullOrEmpty(newUser.getName()) ? newUser.getName() : user.getName());
+        user.setEmail(!StringUtil.isNullOrEmpty(newUser.getEmail()) ? newUser.getEmail() : user.getEmail());
 
         log.debug("User with id {} was updated", newUser.getId());
         return user;
