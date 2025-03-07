@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import ru.practicum.shareit.request.ItemRequest;
-import ru.practicum.shareit.user.User;
+import ru.practicum.shareit.user.UserEntity;
 
 @Data
 @Builder
@@ -15,6 +15,6 @@ public class Item {
     private String name;
     private String description;
     private Boolean available;
-    private User owner;
+    private UserEntity owner;
     private ItemRequest request;
 }
