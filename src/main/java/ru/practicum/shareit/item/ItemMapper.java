@@ -1,31 +1,33 @@
 package ru.practicum.shareit.item;
 
-import org.springframework.stereotype.Component;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.MappingConstants;
+import ru.practicum.shareit.comment.CommentEntity;
+import ru.practicum.shareit.comment.CommentMapper;
+import ru.practicum.shareit.item.dto.ItemCreateRequestDto;
 import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.item.dto.ItemUpdateRequestDto;
+import ru.practicum.shareit.item.model.ItemEntity;
 
-@Component
-public class ItemMapper {
+import java.util.List;
 
-    public ItemDto toItemDto(Item item) {
-        return ItemDto.builder()
-                .id(item.getId())
-                .name(item.getName())
-                .description(item.getDescription())
-                .available(item.getAvailable())
-                .owner(item.getOwner())
-                .request(item.getRequest() != null ?
-                        item.getRequest().getId() : null)
-                .build();
-    }
+@Mapper(componentModel = MappingConstants.ComponentModel.SPRING,
+        uses = {CommentMapper.class})
+public interface ItemMapper {
 
-    public Item toItem(ItemDto itemDto) {
-        return Item.builder()
-                .id(itemDto.getId())
-                .name(itemDto.getName())
-                .description(itemDto.getDescription())
-                .available(itemDto.getAvailable())
-                .owner(itemDto.getOwner())
-                .build();
-    }
+    @Mapping(target = "request",
+            expression = "java(itemEntity.getRequest() != null ? itemEntity.getRequest().getId() : null)")
+    ItemDto toItemDto(ItemEntity itemEntity);
+
+    @Mapping(target = "request",
+            expression = "java(itemEntity.getRequest() != null ? itemEntity.getRequest().getId() : null)")
+    ItemDto toItemDto(ItemEntity itemEntity, List<CommentEntity> comments);
+
+    @Mapping(target = "request", ignore = true)
+    ItemEntity toItemEntity(ItemDto itemDto);
+
+    ItemEntity toItemEntity(ItemCreateRequestDto itemCreateRequestDto);
+
+    ItemEntity toItemEntity(ItemUpdateRequestDto itemUpdateRequestDto);
 }

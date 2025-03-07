@@ -1,13 +1,8 @@
 package ru.practicum.shareit.request;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Data;
 import ru.practicum.shareit.user.UserEntity;
-
-import java.time.LocalDateTime;
 
 /**
  * TODO Sprint add-item-requests.
@@ -15,14 +10,17 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "requests")
 @Data
-public class ItemRequest {
+public class ItemRequestEntity {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
 
     @Column(name = "description")
     private String description;
+
+    @ManyToOne
+    @JoinColumn(name = "requestor_id")
     private UserEntity requestor;
-    private LocalDateTime created;
 }

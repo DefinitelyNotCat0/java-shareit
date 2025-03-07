@@ -1,19 +1,13 @@
 package ru.practicum.shareit.user;
 
-import java.util.List;
-import java.util.Optional;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
 
-public interface UserRepository {
+@Repository
+public interface UserRepository extends JpaRepository<UserEntity, Long> {
 
-    Optional<User> findById(Long id);
-
-    List<User> findAll();
-
-    User create(User user);
-
-    User update(User newUser);
-
-    void deleteById(Long id);
-
-    boolean existsById(Long id);
+    @Query("select count(*) from UserEntity u " +
+            "where u.email = ?1")
+    int getUserCountByEmail(String email);
 }
