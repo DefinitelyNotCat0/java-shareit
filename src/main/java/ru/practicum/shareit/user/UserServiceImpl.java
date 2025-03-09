@@ -2,15 +2,18 @@ package ru.practicum.shareit.user;
 
 import ch.qos.logback.core.util.StringUtil;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exception.ConflictException;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.exception.ValidationException;
+import ru.practicum.shareit.user.dto.UserCreateRequestDto;
 import ru.practicum.shareit.user.dto.UserDto;
+import ru.practicum.shareit.user.dto.UserUpdateRequestDto;
 
 import java.util.List;
-import java.util.Objects;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
@@ -20,13 +23,15 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto getById(Long id) {
-        User user = userRepository.findById(id)
+        UserEntity userEntity = userRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("User not found with id = " + id));
-        return userMapper.toUserDto(user);
+        log.debug("Get user with id = {}", id);
+        return userMapper.toUserDto(userEntity);
     }
 
     @Override
     public List<UserDto> getAll() {
+        log.debug("Get all users");
         return userRepository.findAll()
                 .stream()
                 .map(userMapper::toUserDto)
@@ -34,44 +39,46 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDto create(UserDto userDto) {
-        if (StringUtil.isNullOrEmpty(userDto.getEmail())) {
-            throw new ValidationException("Email is empty");
-        }
-        if (getUserCountByEmail(userDto.getEmail()) > 0) {
+    public UserDto create(UserCreateRequestDto userCreateRequestDto) {
+        if (userRepository.getUserCountByEmail(userCreateRequestDto.getEmail()) > 0) {
             throw new ConflictException("Email already exists");
         }
 
-        User user = userMapper.toUser(userDto);
-        return userMapper.toUserDto(userRepository.create(user));
+        UserEntity userEntity = userMapper.toUserEntity(userCreateRequestDto);
+        UserEntity createdUserEntity = userRepository.save(userEntity);
+        log.debug("User was created with id = {}", createdUserEntity.getId());
+        return userMapper.toUserDto(createdUserEntity);
     }
 
     @Override
-    public UserDto update(Long id, UserDto userDto) {
+    public UserDto update(Long id, UserUpdateRequestDto userUpdateRequestDto) {
         if (id == null) {
             throw new ValidationException("Id must not be empty");
         }
         if (!userRepository.existsById(id)) {
             throw new NotFoundException("User not found with id = " + id);
         }
-        if (getUserCountByEmail(userDto.getEmail()) > 0) {
+        if (userRepository.getUserCountByEmail(userUpdateRequestDto.getEmail()) > 0) {
             throw new ConflictException("Email already exists");
         }
 
-        User user = userMapper.toUser(userDto);
-        user.setId(id);
-        return userMapper.toUserDto(userRepository.update(user));
+        UserEntity userEntity = userMapper.toUserEntity(userUpdateRequestDto);
+        UserEntity userEntityForUpdate = userRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("User not found with id = " + id));
+
+        userEntityForUpdate.setName(!StringUtil.isNullOrEmpty(userEntity.getName()) ?
+                userEntity.getName() : userEntityForUpdate.getName());
+        userEntityForUpdate.setEmail(!StringUtil.isNullOrEmpty(userEntity.getEmail()) ?
+                userEntity.getEmail() : userEntityForUpdate.getEmail());
+
+        UserEntity updatedUserEntity = userRepository.save(userEntityForUpdate);
+        log.debug("User with id = {} was updated", id);
+        return userMapper.toUserDto(updatedUserEntity);
     }
 
     @Override
     public void deleteById(Long id) {
         userRepository.deleteById(id);
-    }
-
-    private long getUserCountByEmail(String newEmail) {
-        return userRepository.findAll()
-                .stream()
-                .filter(user -> Objects.equals(newEmail, user.getEmail()))
-                .count();
+        log.debug("User with id = {} was deleted", id);
     }
 }
