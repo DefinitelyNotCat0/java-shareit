@@ -55,9 +55,8 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public List<ItemDto> getAllByUser(Long userId) {
         log.debug("Get all items by user = {}", userId);
-        return itemRepository.findAll()
+        return itemRepository.findAllByOwnerId(userId)
                 .stream()
-                .filter(item -> userId.equals(item.getOwner().getId()))
                 .map(itemMapper::toItemDto)
                 .toList();
     }

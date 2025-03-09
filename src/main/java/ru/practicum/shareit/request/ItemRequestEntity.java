@@ -1,15 +1,12 @@
 package ru.practicum.shareit.request;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.Getter;
 import ru.practicum.shareit.user.UserEntity;
 
-/**
- * TODO Sprint add-item-requests.
- */
 @Entity
+@Getter
 @Table(name = "requests")
-@Data
 public class ItemRequestEntity {
 
     @Id
