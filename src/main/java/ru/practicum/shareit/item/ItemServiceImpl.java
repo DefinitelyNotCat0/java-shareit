@@ -17,6 +17,7 @@ import ru.practicum.shareit.item.dto.ItemCreateRequestDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemUpdateRequestDto;
 import ru.practicum.shareit.item.model.ItemEntity;
+import ru.practicum.shareit.request.ItemRequestRepository;
 import ru.practicum.shareit.user.UserEntity;
 import ru.practicum.shareit.user.UserRepository;
 
@@ -33,6 +34,7 @@ public class ItemServiceImpl implements ItemService {
     private final UserRepository userRepository;
     private final CommentRepository commentRepository;
     private final BookingRepository bookingRepository;
+    private final ItemRequestRepository itemRequestRepository;
     private final CommentMapper commentMapper;
 
     @Override
@@ -76,9 +78,14 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public ItemDto create(Long userId, ItemCreateRequestDto itemCreateRequestDto) {
+        Long itemRequestId = itemCreateRequestDto.getRequestId();
         ItemEntity itemEntity = itemMapper.toItemEntity(itemCreateRequestDto);
         itemEntity.setOwner(userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("User not found with id = " + userId)));
+        if (itemRequestId != null) {
+            itemEntity.setRequest(itemRequestRepository.findById(itemRequestId)
+                    .orElseThrow(() -> new NotFoundException("Item request not found with id = " + itemRequestId)));
+        }
         ItemEntity createdItemEntity = itemRepository.save(itemEntity);
         log.debug("Item created with id = {}", createdItemEntity.getId());
         return itemMapper.toItemDto(createdItemEntity);

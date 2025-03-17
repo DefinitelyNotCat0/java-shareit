@@ -7,6 +7,7 @@ import ru.practicum.shareit.comment.CommentEntity;
 import ru.practicum.shareit.comment.CommentMapper;
 import ru.practicum.shareit.item.dto.ItemCreateRequestDto;
 import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.dto.ItemRequestItemDto;
 import ru.practicum.shareit.item.dto.ItemUpdateRequestDto;
 import ru.practicum.shareit.item.model.ItemEntity;
 
@@ -30,4 +31,8 @@ public interface ItemMapper {
     ItemEntity toItemEntity(ItemCreateRequestDto itemCreateRequestDto);
 
     ItemEntity toItemEntity(ItemUpdateRequestDto itemUpdateRequestDto);
+
+    @Mapping(target = "ownerId",
+            expression = "java(itemEntity.getOwner() != null ? itemEntity.getOwner().getId() : null)")
+    ItemRequestItemDto toItemRequestItemDto(ItemEntity itemEntity);
 }
