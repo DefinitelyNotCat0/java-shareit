@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import ru.practicum.shareit.exception.ConflictException;
 import ru.practicum.shareit.exception.NotFoundException;
+import ru.practicum.shareit.exception.ValidationException;
 import ru.practicum.shareit.user.dto.UserCreateRequestDto;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.dto.UserUpdateRequestDto;
@@ -99,6 +100,21 @@ class UserServiceImplTest {
         assertThat(userEntity.getEmail(), equalTo(userUpdateRequestDto.getEmail()));
 
         assertThrows(NotFoundException.class, () -> userService.update(Long.MAX_VALUE, userUpdateRequestDto));
+        assertThrows(ValidationException.class, () -> userService.update(null, userUpdateRequestDto));
+
+        UserUpdateRequestDto userUpdateRequestDto1 =
+                prepareUserUpdateRequestDto(null, "name11", "email2@gmail.com");
+        assertThrows(ConflictException.class, () -> userService.update(id, userUpdateRequestDto1));
+
+        UserUpdateRequestDto userUpdateRequestDto2 =
+                prepareUserUpdateRequestDto(id, null, null);
+        userService.update(id, userUpdateRequestDto2);
+
+        userEntity = query.setParameter("id", userUpdateRequestDto.getId()).getSingleResult();
+
+        assertThat(userEntity.getId(), equalTo(userUpdateRequestDto.getId()));
+        assertThat(userEntity.getName(), equalTo(userUpdateRequestDto.getName()));
+        assertThat(userEntity.getEmail(), equalTo(userUpdateRequestDto.getEmail()));
     }
 
     @Test

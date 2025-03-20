@@ -6,11 +6,12 @@ import ru.practicum.shareit.item.ItemMapper;
 import ru.practicum.shareit.item.model.ItemEntity;
 import ru.practicum.shareit.request.dto.ItemRequestCreateDto;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
+import ru.practicum.shareit.user.UserMapper;
 
 import java.util.List;
 
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING,
-        uses = {ItemMapper.class})
+        uses = {ItemMapper.class, UserMapper.class})
 public interface ItemRequestMapper {
 
     ItemRequestDto toItemRequestDto(ItemRequestEntity itemRequestEntity, List<ItemEntity> items);
