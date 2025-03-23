@@ -3,6 +3,7 @@ package ru.practicum.shareit.booking;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.dto.BookingCreateRequestDto;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.exception.ForbiddenException;
@@ -17,6 +18,7 @@ import java.util.List;
 
 @Slf4j
 @Service
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class BookingServiceImpl implements BookingService {
 
@@ -82,6 +84,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
+    @Transactional
     public BookingDto create(Long userId, BookingCreateRequestDto bookingCreateRequestDto) {
         ItemEntity itemEntity = itemRepository.findById(bookingCreateRequestDto.getItemId())
                 .orElseThrow(() -> new NotFoundException("Item not found with id = " + bookingCreateRequestDto.getItemId()));
@@ -109,6 +112,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
+    @Transactional
     public BookingDto setApproval(Long userId, Long bookingId, Boolean approved) {
         BookingEntity bookingEntity = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new NotFoundException("Booking not found with id = " + bookingId));

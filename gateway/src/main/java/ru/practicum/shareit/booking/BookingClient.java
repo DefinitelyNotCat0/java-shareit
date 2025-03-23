@@ -45,7 +45,6 @@ public class BookingClient extends BaseClient {
         return get("/owner?state={state}", userId, parameters);
     }
 
-
     public ResponseEntity<Object> addBooking(Long userId, BookingCreateRequestDto bookingCreateRequestDto) {
         return post("", userId, bookingCreateRequestDto);
     }

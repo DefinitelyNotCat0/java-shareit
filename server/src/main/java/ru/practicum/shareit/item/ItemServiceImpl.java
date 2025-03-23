@@ -4,6 +4,7 @@ import ch.qos.logback.core.util.StringUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.BookingRepository;
 import ru.practicum.shareit.comment.CommentEntity;
 import ru.practicum.shareit.comment.CommentMapper;
@@ -26,6 +27,7 @@ import java.util.List;
 
 @Slf4j
 @Service
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class ItemServiceImpl implements ItemService {
 
@@ -77,6 +79,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
+    @Transactional
     public ItemDto create(Long userId, ItemCreateRequestDto itemCreateRequestDto) {
         Long itemRequestId = itemCreateRequestDto.getRequestId();
         ItemEntity itemEntity = itemMapper.toItemEntity(itemCreateRequestDto);
@@ -92,6 +95,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
+    @Transactional
     public ItemDto update(Long userId, Long itemId, ItemUpdateRequestDto itemUpdateRequestDto) {
         ItemEntity itemEntity = itemMapper.toItemEntity(itemUpdateRequestDto);
         ItemEntity itemEntityForUpdate = itemRepository.findById(itemId)
@@ -114,12 +118,14 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
+    @Transactional
     public void deleteById(Long id) {
         itemRepository.deleteById(id);
         log.debug("Item with id = {} was deleted", id);
     }
 
     @Override
+    @Transactional
     public CommentDto addComment(Long userId, Long itemId, CommentItemRequestDto requestDto) {
         CommentEntity commentEntity = new CommentEntity();
         ItemEntity itemEntity = itemRepository.findById(itemId)
